@@ -13,7 +13,7 @@ included_categories = [
     'kitchen_appliances',
     'toys', 'home_appliances', 'home_furnishing', 'womens_footwear'
 ]
-
+# included_categories = ['fragrances']
 # Define the columns to pick
 columns_to_pick = [
     'title', 'mrp', 'sellingPrice', 'specialPrice', 'productUrl', 'productBrand',
@@ -32,10 +32,12 @@ headers = {
     "Fk-Affiliate-Token": api_token
 }
 
+session = requests.Session()  # Create a session for making requests
+
 
 def generate_data():
     def process_category(category_name, category_url):
-        response2 = requests.get(category_url, headers=headers)
+        response2 = session.get(category_url, headers=headers)
         if response2.status_code == 200:
             zip_content = io.BytesIO(response2.content)
 
@@ -60,7 +62,7 @@ def generate_data():
     if not os.path.exists(root_directory):
         os.makedirs(root_directory)
     # Send GET request with headers and parameters
-    response = requests.get(url, headers=headers)
+    response = session.get(url, headers=headers)
     # Check response status code
     if response.status_code == 200:
         data = response.json()
