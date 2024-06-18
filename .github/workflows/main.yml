@@ -32,9 +32,21 @@ jobs:
         sudo apt update && sudo apt install ngrok
 
     - name: Start ngrok
-      run: ngrok http 5000 &
+      run: |
+        nohup ngrok http 5000 --log=stdout > ngrok.log &
       env:
         NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+
+    - name: Wait for ngrok to start
+      run: sleep 5
+
+    - name: Get ngrok URL
+      run: |
+        NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+        echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
+
+    - name: Display ngrok URL
+      run: echo "ngrok URL: ${{ env.NGROK_URL }}"
 
     - name: Run Python script
       run: python app.py
