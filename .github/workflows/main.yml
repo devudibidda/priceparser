@@ -29,7 +29,7 @@ jobs:
       run: |
         curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
         echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-        sudo apt update && sudo apt install ngrok
+        sudo apt update && sudo apt install ngrok jq
 
     - name: Start ngrok
       run: |
@@ -41,6 +41,7 @@ jobs:
       run: sleep 5
 
     - name: Get ngrok URL
+      id: get-ngrok-url
       run: |
         NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url')
         echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
