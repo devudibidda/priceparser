@@ -1,4 +1,4 @@
-name: Run Python script every 6 hourus or on push to master
+wname: Run Python script every 6 hourus or on push to master
 
 on:
   schedule:
