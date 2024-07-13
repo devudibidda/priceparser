@@ -36,6 +36,8 @@ session = requests.Session()  # Create a session for making requests
 
 
 def generate_data():
+    import pandas as pd
+
     def process_category(category_name, category_url):
         response2 = session.get(category_url, headers=headers)
         if response2.status_code == 200:
@@ -51,12 +53,10 @@ def generate_data():
                             filtered_rows = [{col: row[col] for col in columns_to_pick} for row in csv_reader if
                                              row['inStock'] == 'true']
 
-                            # Write filtered CSV data to a separate CSV file
-                            csv_output_path = os.path.join(root_directory, f"{category_name}.csv")
-                            with open(csv_output_path, 'w', newline='', encoding='utf-8') as output_file:
-                                csv_writer = csv.DictWriter(output_file, fieldnames=columns_to_pick)
-                                csv_writer.writeheader()
-                                csv_writer.writerows(filtered_rows)
+                            # Write filtered data to a Parquet file
+                            parquet_output_path = os.path.join(root_directory, f"{category_name}.parquet")
+                            df = pd.DataFrame(filtered_rows)
+                            df.to_parquet(parquet_output_path, engine='pyarrow')
 
     # Create the root directory if it doesn't exist
     if not os.path.exists(root_directory):

@@ -24,7 +24,7 @@ for entry in os.scandir(parquet_directory):
         category = os.path.splitext(entry.name)[0]  # Extract category from filename
         df = dd.read_parquet(entry.path, engine='pyarrow')
         df['discount_percentage'] = ((df['mrp'] - df['sellingPrice']) / df['mrp']) * 100
-        discounted_products = df[df['discount_percentage'] > 30]
+        discounted_products = df[df['discount_percentage'] > 10]
         computations.append((category, discounted_products))
 
 # Dictionary to store products with more than 50% discount by category
@@ -33,6 +33,7 @@ discounted_products_by_category = {}
 # Compute results
 for category, computation in computations:
     result = computation.compute()
+    print(result)
     if not result.empty:
         discounted_products_by_category[category] = result
 
