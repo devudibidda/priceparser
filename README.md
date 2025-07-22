@@ -25,6 +25,11 @@ This is a web application that helps you find products with high discounts on Fl
    ```
    pip install -r requirements.txt
    ```
+3. Set the following environment variables:
+   ```
+   export FLIPKART_API_TOKEN="your_api_token"
+   export FLIPKART_AFFILIATE_ID="your_affiliate_id"
+   ```
 
 ## Usage
 

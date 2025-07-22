@@ -3,25 +3,23 @@ import csv
 import io
 import os
 import zipfile
+import json
+import logging
 
 import requests
 
-# Define the categories to include
-included_categories = [
-    'fragrances', 'mens_clothing', 'kids_clothing',
-    'kids_footwear', 'womens_clothing', 'luggage_travel', 'wearable_smart_devices', 'grooming_beauty_wellness',
-    'kitchen_appliances',
-    'toys', 'home_appliances', 'home_furnishing', 'womens_footwear'
-]
-# included_categories = ['fragrances']
-# Define the columns to pick
-columns_to_pick = [
-    'title', 'mrp', 'sellingPrice', 'specialPrice', 'productUrl', 'productBrand',
-    'inStock', 'codAvailable', 'offers', 'discount', 'shippingCharges'
-]
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-api_token = '98c21807f30c4c2a818ab339faea0f66'
-affiliate_id = 'naninanin'
+# Load configuration from config.json
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+included_categories = config['included_categories']
+columns_to_pick = config['columns_to_pick']
+
+api_token = os.environ.get('FLIPKART_API_TOKEN')
+affiliate_id = os.environ.get('FLIPKART_AFFILIATE_ID')
 root_directory = 'product_feeds'  # Root directory to save all CSV files
 max_workers = 5  # Number of threads for concurrent processing
 
@@ -38,9 +36,14 @@ session = requests.Session()  # Create a session for making requests
 def generate_data():
     import pandas as pd
 
+    if not api_token or not affiliate_id:
+        logging.error("Error: FLIPKART_API_TOKEN and FLIPKART_AFFILIATE_ID environment variables must be set.")
+        return
+
     def process_category(category_name, category_url):
-        response2 = session.get(category_url, headers=headers)
-        if response2.status_code == 200:
+        try:
+            response2 = session.get(category_url, headers=headers)
+            response2.raise_for_status()  # Raise an exception for bad status codes
             zip_content = io.BytesIO(response2.content)
 
             # Extract CSV data from the zip file and filter columns
@@ -57,17 +60,28 @@ def generate_data():
                             parquet_output_path = os.path.join(root_directory, f"{category_name}.parquet")
                             df = pd.DataFrame(filtered_rows)
                             df.to_parquet(parquet_output_path, engine='pyarrow')
+                            logging.info(f"Successfully processed and saved data for category: {category_name}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching data for category {category_name}: {e}")
+        except Exception as e:
+            logging.error(f"An unexpected error occurred while processing category {category_name}: {e}")
 
     # Create the root directory if it doesn't exist
     if not os.path.exists(root_directory):
         os.makedirs(root_directory)
-    # Send GET request with headers and parameters
-    response = session.get(url, headers=headers)
-    # Check response status code
-    if response.status_code == 200:
+
+    try:
+        # Send GET request with headers and parameters
+        response = session.get(url, headers=headers)
+        response.raise_for_status()
         data = response.json()
-    else:
-        print(f"Failed to fetch data: {response.status_code} - {response.text}")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to fetch data: {e}")
+        return
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        return
+
     # Get categories
     categories = data["apiGroups"]["affiliate"]["apiListings"].items()
     # Filter categories to include only the specified ones
@@ -78,7 +92,7 @@ def generate_data():
             category_name = details["apiName"]
             category_url = details["availableVariants"]["v1.1.0"]["get"]
             executor.submit(process_category, category_name, category_url)
-    print("All CSV data filtered and saved in the 'product_feeds' directory")
+    logging.info("All CSV data filtered and saved in the 'product_feeds' directory")
 
 
 if __name__ == '__main__':

@@ -1,0 +1,30 @@
+{
+  "included_categories": [
+    "fragrances",
+    "mens_clothing",
+    "kids_clothing",
+    "kids_footwear",
+    "womens_clothing",
+    "luggage_travel",
+    "wearable_smart_devices",
+    "grooming_beauty_wellness",
+    "kitchen_appliances",
+    "toys",
+    "home_appliances",
+    "home_furnishing",
+    "womens_footwear"
+  ],
+  "columns_to_pick": [
+    "title",
+    "mrp",
+    "sellingPrice",
+    "specialPrice",
+    "productUrl",
+    "productBrand",
+    "inStock",
+    "codAvailable",
+    "offers",
+    "discount",
+    "shippingCharges"
+  ]
+}
