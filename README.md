@@ -31,16 +31,26 @@ This is a web application that helps you find products with high discounts on Fl
    export FLIPKART_AFFILIATE_ID="your_affiliate_id"
    ```
 
-## Usage
+## Usage with Docker
 
-1. Run the `flipkart_data.py` script to fetch the latest product data from Flipkart:
+1. **Build the Docker image:**
    ```
-   python flipkart_data.py
+   docker build -t flipkart-discount-finder .
    ```
-2. Run the `app.py` script to start the web application:
+2. **Run the Docker container:**
    ```
-   python app.py
+   docker run -e FLIPKART_API_TOKEN="your_api_token" -e FLIPKART_AFFILIATE_ID="your_affiliate_id" flipkart-discount-finder
    ```
-3. Open your web browser and go to `http://localhost:5000` to access the application.
+   This will run the `flipkart_data.py` script and save the product data in the `product_feeds` directory.
 
-Now, you can select a category from the dropdown menu and click "Calculate Discount" to see the discounted products in that category.
+3. **Run the web application:**
+   To run the web application, you'll need to modify the `Dockerfile` to run `app.py` instead of `flipkart_data.py`. Change the last line of the `Dockerfile` to:
+   ```
+   CMD ["python", "app.py"]
+   ```
+   Then, build the image again and run the container with port mapping:
+   ```
+   docker build -t flipkart-discount-finder-app .
+   docker run -p 5000:5000 flipkart-discount-finder-app
+   ```
+   Now, you can open your web browser and go to `http://localhost:5000` to access the application.
