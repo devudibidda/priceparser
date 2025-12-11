@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y2K Bank</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Orbitron:wght@500;900&display=swap');
+
+        :root {
+            --hot-pink: #FF00CC;
+            --electric-blue: #00FFFF;
+            --lime-green: #33FF00;
+            --chrome-silver: #C0C0C0;
+            --glass-white: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            background: linear-gradient(135deg, #FF0099, #493240);
+            background-attachment: fixed;
+            font-family: 'Comic Neue', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding-bottom: 80px; /* Space for bottom nav */
+            overflow-x: hidden;
+        }
+
+        /* Header / Balance */
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #FF00CC;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .balance-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 0 0 10px var(--electric-blue), 2px 2px 0px black;
+            margin: 5px 0;
+        }
+
+        /* Card Carousel */
+        .card-carousel {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px;
+            gap: 15px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .card-carousel::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .credit-card {
+            flex: 0 0 280px;
+            height: 170px;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5), inset 2px 2px 5px rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.4);
+            overflow: hidden;
+        }
+
+        .card-1 {
+            background: linear-gradient(135deg, var(--chrome-silver), #FFFFFF, var(--chrome-silver));
+            color: black;
+        }
+
+        .card-2 {
+            background: linear-gradient(135deg, var(--hot-pink), #FF66CC);
+            color: white;
+        }
+
+        .card-shine {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0));
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        .card-chip {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(45deg, #FFD700, #DAA520);
+            border-radius: 5px;
+            border: 1px solid #B8860B;
+        }
+
+        .card-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+        }
+
+        .card-holder {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Quick Actions */
+        .actions-grid {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--electric-blue), #009999);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.5), inset 2px 2px 2px rgba(255,255,255,0.5);
+            border: 2px solid white;
+            font-size: 1.5rem;
+            transition: transform 0.1s;
+        }
+
+        .action-icon:active {
+            transform: scale(0.95);
+            box-shadow: inset 3px 3px 5px rgba(0,0,0,0.5);
+        }
+
+        .action-label {
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* Recent Transactions */
+        .transactions-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px var(--hot-pink);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .transaction-item {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .trans-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--lime-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            border: 2px solid white;
+            box-shadow: inset 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .trans-details {
+            flex: 1;
+        }
+
+        .trans-title {
+            font-weight: bold;
+            display: block;
+        }
+
+        .trans-date {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .trans-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+        }
+
+        .trans-amount.negative {
+            color: #FF9999;
+        }
+
+        .trans-amount.positive {
+            color: #99FF99;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px var(--electric-blue);
+            transform: scale(1.2);
+        }
+
+        /* Message Simulator - hidden/dev tool */
+        .message-simulator {
+            margin: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            border: 1px solid var(--chrome-silver);
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.9);
+            font-family: 'Comic Neue', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .glossy-btn {
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+            border: 2px solid white;
+            border-radius: 20px;
+            padding: 8px 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+        }
+        .glossy-btn:active {
+            transform: translateY(2px);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">CyberBank 2000</div>
+        <div class="balance-label">Current Balance</div>
+        <div class="balance-amount" id="balanceDisplay">$4,200.50</div>
+    </div>
+
+    <!-- Cards -->
+    <div class="card-carousel">
+        <!-- Card 1 -->
+        <div class="credit-card card-1">
+            <div class="card-shine"></div>
+            <div class="card-chip"></div>
+            <div class="card-number">**** **** **** 1999</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="card-holder">Jules Agent</div>
+                <div style="font-weight: bold; font-style: italic;">VISA</div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="credit-card card-2">
+            <div class="card-shine"></div>
+            <div class="card-chip"></div>
+            <div class="card-number">**** **** **** 2023</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="card-holder">Jules Agent</div>
+                <div style="font-weight: bold; font-style: italic;">MasterCard</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-grid">
+        <button class="action-btn">
+            <div class="action-icon">💸</div>
+            <span class="action-label">Transfer</span>
+        </button>
+        <button class="action-btn">
+            <div class="action-icon">💳</div>
+            <span class="action-label">Pay</span>
+        </button>
+        <button class="action-btn">
+            <div class="action-icon">📥</div>
+            <span class="action-label">Deposit</span>
+        </button>
+    </div>
+
+    <!-- Message Simulator Area -->
+    <div class="message-simulator">
+        <div style="margin-bottom: 5px; font-size: 0.8rem; text-transform: uppercase;">Simulate SMS Message</div>
+        <input type="text" id="smsInput" class="message-input" placeholder="e.g. 'Spent $25.50 at Pizza Hut' or 'Received $100'">
+        <button class="glossy-btn" onclick="processMessage()">Receive</button>
+    </div>
+
+    <!-- Transactions -->
+    <div class="transactions-section">
+        <div class="section-title">
+            <span>Recent Activity</span>
+            <span style="font-size: 0.8rem; cursor: pointer;">See All ></span>
+        </div>
+        <div class="transaction-list" id="transactionList">
+            <!-- Items injected by JS -->
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <div class="nav-item active">🏠</div>
+        <div class="nav-item">📊</div>
+        <div class="nav-item">🔔</div>
+        <div class="nav-item">⚙️</div>
+    </div>
+
+</div>
+
+<script>
+    // Initial State
+    let balance = 4200.50;
+    const transactions = [
+        { title: "Blockbuster Video", amount: -15.00, date: "Today", icon: "🎬" },
+        { title: "Tower Records", amount: -24.99, date: "Yesterday", icon: "💿" },
+        { title: "Paycheck", amount: 1500.00, date: "Oct 24", icon: "💰" }
+    ];
+
+    const balanceDisplay = document.getElementById('balanceDisplay');
+    const transactionList = document.getElementById('transactionList');
+    const smsInput = document.getElementById('smsInput');
+
+    function formatMoney(amount) {
+        return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function render() {
+        // Update Balance
+        balanceDisplay.innerText = formatMoney(balance);
+
+        // Update Transactions
+        transactionList.innerHTML = '';
+        transactions.forEach(tx => {
+            const el = document.createElement('div');
+            el.className = 'transaction-item';
+
+            const isNegative = tx.amount < 0;
+            const amountClass = isNegative ? 'negative' : 'positive';
+            const displayAmount = (isNegative ? '' : '+') + formatMoney(tx.amount);
+
+            el.innerHTML = `
+                <div style="display:flex; align-items:center;">
+                    <div class="trans-icon">${tx.icon}</div>
+                    <div class="trans-details">
+                        <span class="trans-title">${tx.title}</span>
+                        <span class="trans-date">${tx.date}</span>
+                    </div>
+                </div>
+                <div class="trans-amount ${amountClass}">${displayAmount}</div>
+            `;
+            transactionList.appendChild(el);
+        });
+    }
+
+    function processMessage() {
+        const text = smsInput.value;
+        if (!text) return;
+
+        // Simple Regex Parsing
+        // Looks for patterns like "Spent $X at Store" or "Received $X"
+        const spentRegex = /(?:spent|paid|purchase)\s*\$?\s*([\d,]+\.?\d*)\s*(?:at|to|for)?\s*(.*)/i;
+        const receivedRegex = /(?:received|deposit|got)\s*\$?\s*([\d,]+\.?\d*)\s*(?:from)?\s*(.*)/i;
+
+        let amount = 0;
+        let title = "Unknown Transaction";
+        let icon = "❓";
+        let matched = false;
+
+        const spentMatch = text.match(spentRegex);
+        const receivedMatch = text.match(receivedRegex);
+
+        if (spentMatch) {
+            amount = -parseFloat(spentMatch[1].replace(/,/g, ''));
+            title = spentMatch[2] ? spentMatch[2].trim() : "Purchase";
+            icon = "🛍️";
+            matched = true;
+        } else if (receivedMatch) {
+            amount = parseFloat(receivedMatch[1].replace(/,/g, ''));
+            title = receivedMatch[2] ? receivedMatch[2].trim() : "Deposit";
+            icon = "💵";
+            matched = true;
+        }
+
+        if (matched && !isNaN(amount)) {
+            // Update State
+            balance += amount;
+            transactions.unshift({
+                title: title || (amount < 0 ? "Purchase" : "Deposit"),
+                amount: amount,
+                date: "Just now",
+                icon: icon
+            });
+
+            // Re-render
+            render();
+            smsInput.value = '';
+        } else {
+            alert("Could not parse message! Try 'Spent $50 at Store' or 'Received $100'");
+        }
+    }
+
+    // Initial Render
+    render();
+
+</script>
+</body>
+</html>
